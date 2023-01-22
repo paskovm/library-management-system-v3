@@ -10,7 +10,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Database {
+public class PopulateLibrary {
 
     private static final String HOST = "jdbc:mysql://127.0.0.1:3306/lms";
     private static final String USERNAME = "devuser";
@@ -23,15 +23,12 @@ public class Database {
     private static List<TempClerk> tempClerks = new ArrayList<>();
     private static List<TempStaff> tempStaffs = new ArrayList<>();
 
-    public static void main(String[] args) {
-        collectDataFromDb();
-    }
 
-    private static void collectDataFromDb() {
+    public static void populate() {
         try (Connection connection = DriverManager.getConnection(HOST, USERNAME, PASSWORD);
              Statement statement = connection.createStatement()) {
 
-            collectAllUsersFromDb(statement);
+            collectAllUsers(statement);
             collectAllBooks(statement);
             collectAllLoans(statement);
             collectHoldRequest(statement);
@@ -143,7 +140,7 @@ public class Database {
         }
     }
 
-    private static void collectAllUsersFromDb(Statement statement) throws SQLException {
+    private static void collectAllUsers(Statement statement) throws SQLException {
         collectLibrarian(statement);
         collectClerks(statement);
         collectStaff(statement);

@@ -1,6 +1,7 @@
 package com.metodipaskov.entities;
 
 import com.metodipaskov.entities.actors.Person;
+import com.metodipaskov.menu.Menu;
 
 public class Library {
 
@@ -11,7 +12,7 @@ public class Library {
 
     private Person loggedInPerson;
 
-//    private Menu mainMenu;
+    private Menu mainMenu;
 
     private Library() {
         this.name = "National Library";
@@ -28,13 +29,13 @@ public class Library {
         return name;
     }
 
-//    public Menu getMainMenu() {
-//        return mainMenu;
-//    }
-//
-//    public void setMainMenu(Menu mainMenu) {
-//        this.mainMenu = mainMenu;
-//    }
+    public Menu getMainMenu() {
+        return mainMenu;
+    }
+
+    public void setMainMenu(Menu mainMenu) {
+        this.mainMenu = mainMenu;
+    }
 
     public Person getLoggedInPerson() {
         return loggedInPerson;
