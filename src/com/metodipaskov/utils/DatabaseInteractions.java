@@ -7,12 +7,13 @@ public class DatabaseInteractions {
     private static final String HOST = "jdbc:mysql://127.0.0.1:3306/lms";
     private static final String USERNAME = "devuser";
     private static final String PASSWORD = "12345";
-
     private static final int FAILURE_CODE = -999;
 
     public static void main(String[] args) {
-        int result = createBook("Book Name", "Metodi Paskov", "comedy");
-        System.out.println(result);
+//        int result = createBook("Book Name", "Metodi Paskov", "comedy");
+//        System.out.println(result);
+
+        removeBook(1011);
     }
 
     public static int createBook(String title, String author, String genre) {
@@ -29,6 +30,25 @@ public class DatabaseInteractions {
                 System.out.println("Problem detected! The book is not created.");
             }
             return id;
+        }
+        return result;
+    }
+
+    public static int removeBook(int id) {
+        String sql = "DELETE FROM LMS.BOOK WHERE ID = " + id;
+
+        int result = updateDb(sql);
+        if (result == FAILURE_CODE) {
+            System.out.println("Problem detected! The book can't be deleted.");
+        } else if (result == 0) {
+            System.out.println("No book with id: " + id + ", found to delete.");
+        } else {
+            sql = "SELECT * FROM LMS.BOOK WHERE ID = " + id;
+
+            result = queryDbForId(sql);
+            if (result != FAILURE_CODE) {
+                System.out.println("Problem detected! The book is not deleted.");
+            }
         }
         return result;
     }

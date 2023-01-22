@@ -95,7 +95,7 @@ public abstract class AddUpdateCheckBookMenu implements Menu {
                     Book book = new Book(bookId, title, author, genre);
                     bookService.addBook(book);
                 } else {
-                    System.out.println("Can't create book!");
+                    System.out.println("Can't create the book!");
                 }
             }
 

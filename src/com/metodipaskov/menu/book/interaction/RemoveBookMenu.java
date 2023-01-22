@@ -8,6 +8,7 @@ import com.metodipaskov.menu.help.AddUpdateCheckBookMenu;
 import com.metodipaskov.services.BookManagementService;
 import com.metodipaskov.services.HoldRequestManagementService;
 import com.metodipaskov.services.LoanManagementService;
+import com.metodipaskov.utils.DatabaseInteractions;
 
 import java.util.ListIterator;
 
@@ -24,17 +25,20 @@ public class RemoveBookMenu extends AddUpdateCheckBookMenu {
 
         Book book = getBook();
         if (book != null) {
-            ListIterator<Loan> loans = loanService.getLoansForBook(book).listIterator();
-            while (loans.hasNext()) {
-                loanService.removeLoan(loans.next());
-            }
+            int result = DatabaseInteractions.removeBook(book.getBookId());
+            if (result < 0) { // if no book id is returned that means it is successfully deleted
+                ListIterator<Loan> loans = loanService.getLoansForBook(book).listIterator();
+                while (loans.hasNext()) {
+                    loanService.removeLoan(loans.next());
+                }
 
-            ListIterator<HoldRequest> holdRequests = holdRequestService.getHoldRequestsForBook(book).listIterator();
-            while (holdRequests.hasNext()) {
-                holdRequestService.removeHoldRequest(holdRequests.next());
-            }
+                ListIterator<HoldRequest> holdRequests = holdRequestService.getHoldRequestsForBook(book).listIterator();
+                while (holdRequests.hasNext()) {
+                    holdRequestService.removeHoldRequest(holdRequests.next());
+                }
 
-            bookService.removeBook(book);
+                bookService.removeBook(book);
+            }
         }
 
         library.getMainMenu().start();
@@ -43,7 +47,7 @@ public class RemoveBookMenu extends AddUpdateCheckBookMenu {
     @Override
     public void printMenuHeader() {
         System.out.println(System.lineSeparator() +
-                            "----------------------------------------------------");
+                           "----------------------------------------------------");
         System.out.println("===============  Add New Book Portal  ==============");
         System.out.println("----------------------------------------------------");
     }
