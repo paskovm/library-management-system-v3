@@ -2,6 +2,7 @@ package com.metodipaskov.menu.help;
 
 import com.metodipaskov.entities.actors.*;
 import com.metodipaskov.services.UserManagementService;
+import com.metodipaskov.utils.DatabaseInteractions;
 
 import java.util.Scanner;
 
@@ -30,8 +31,8 @@ public abstract class AddUpdateCheckUserMenu extends AddUpdateCheckBookMenu {
             try {
                 System.out.println("----------------------------------------------------");
                 System.out.println("To enter users id press 1," + System.lineSeparator() +
-                        "to enter users full name press 2," + System.lineSeparator() +
-                        "to enter users email press 3");
+                                   "to enter users full name press 2," + System.lineSeparator() +
+                                   "to enter users email press 3");
                 System.out.println("Enter your choice: ");
                 int choice = Integer.parseInt(scanner.nextLine());
 
@@ -178,25 +179,33 @@ public abstract class AddUpdateCheckUserMenu extends AddUpdateCheckBookMenu {
                 }
             }
 
-            Person user = null;
-            if (userType.equals("Borrower")) {
-//                user = new Borrower(firstName, lastName, address, phoneNumber, email, password);
-            } else if (userType.equals("Librarian") && salary != 0 && officeNumber != 0) {
-//                user = new Librarian(firstName, lastName, address, phoneNumber, email, password, salary, officeNumber);
-            } else if (userType.equals("Clerk") && salary != 0 && deskNumber != 0) {
-//                user = new Clerk(firstName, lastName, address, phoneNumber, email, password, salary, deskNumber);
-            } else {
-                System.out.println("Problem detected! Empty value provided!");
-                System.out.println("The added user can't have empty value!");
-            }
+            // Check if user already exists !!!!!
+            // Check if Librarian already exists
+            // Check Clerks desk occupation !
 
-            if (user != null) {
-                userService.createUser(user);
-                user.printInfo();
+            int userId = DatabaseInteractions.createPerson(firstName, lastName, address, phoneNumber, email, password,
+                    officeNumber, deskNumber, salary);
+
+            if (userId > 0) {
+                Person user = null;
+                if (userType.equals("Borrower")) {
+                    user = new Borrower(userId, firstName, lastName, address, phoneNumber, email, password);
+                } else if (userType.equals("Librarian") && salary != 0 && officeNumber != 0) {
+                    user = new Librarian(userId, firstName, lastName, address, phoneNumber, email, password, salary, officeNumber);
+                } else if (userType.equals("Clerk") && salary != 0 && deskNumber != 0) {
+                    user = new Clerk(userId, firstName, lastName, address, phoneNumber, email, password, salary, deskNumber);
+                } else {
+                    System.out.println("Problem detected! Empty value provided!");
+                    System.out.println("The added user can't have empty value!");
+                }
+
+                if (user != null) {
+                    userService.createUser(user);
+                    user.printInfo();
+                }
+                break;
             }
-            break;
         }
-
     }
 
     protected void updateUser(Person user) {
@@ -223,7 +232,7 @@ public abstract class AddUpdateCheckUserMenu extends AddUpdateCheckBookMenu {
                 break;
             } catch (NumberFormatException e) {
                 System.out.println("Problem detected! Wrong value entered for the phone number: " + input +
-                        System.lineSeparator() + " Please, try again.");
+                                   System.lineSeparator() + " Please, try again.");
             }
         }
 
@@ -245,7 +254,7 @@ public abstract class AddUpdateCheckUserMenu extends AddUpdateCheckBookMenu {
                     break;
                 } catch (NumberFormatException e) {
                     System.out.println("Problem detected! Wrong value entered for the salary: " + input +
-                            System.lineSeparator() + " Please, try again.");
+                                       System.lineSeparator() + " Please, try again.");
                 }
             }
         }
@@ -262,7 +271,7 @@ public abstract class AddUpdateCheckUserMenu extends AddUpdateCheckBookMenu {
                     break;
                 } catch (NumberFormatException e) {
                     System.out.println("Problem detected! Wrong value entered for the office: " + input +
-                            System.lineSeparator() + " Please, try again.");
+                                       System.lineSeparator() + " Please, try again.");
                 }
             }
         }
@@ -279,20 +288,20 @@ public abstract class AddUpdateCheckUserMenu extends AddUpdateCheckBookMenu {
                     break;
                 } catch (NumberFormatException e) {
                     System.out.println("Problem detected! Wrong value entered for the desk: " + input +
-                            System.lineSeparator() + " Please, try again.");
+                                       System.lineSeparator() + " Please, try again.");
                 }
             }
         }
 
         if ((firstName != null && !firstName.isEmpty() && !firstName.isEmpty()) ||
-                (lastName != null && !lastName.isBlank() && !lastName.isEmpty()) ||
-                (address != null && !address.isBlank() && !address.isEmpty()) ||
-                phoneNumber > 0 ||
-                (email != null && !email.isBlank() && !email.isEmpty()) ||
-                (password != null && !password.isBlank() && !password.isEmpty()) ||
-                salary > 0 ||
-                officeNumber > 0 ||
-                deskNumber > 0) {
+            (lastName != null && !lastName.isBlank() && !lastName.isEmpty()) ||
+            (address != null && !address.isBlank() && !address.isEmpty()) ||
+            phoneNumber > 0 ||
+            (email != null && !email.isBlank() && !email.isEmpty()) ||
+            (password != null && !password.isBlank() && !password.isEmpty()) ||
+            salary > 0 ||
+            officeNumber > 0 ||
+            deskNumber > 0) {
 
             userService.updateUser(user, firstName, lastName, address, phoneNumber, email, password, salary, officeNumber, deskNumber);
 
