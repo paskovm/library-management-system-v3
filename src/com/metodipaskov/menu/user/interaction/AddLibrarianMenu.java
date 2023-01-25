@@ -15,15 +15,6 @@ public class AddLibrarianMenu extends AddUpdateCheckUserMenu {
     private UserManagementService userService = UserManagementService.getInstance();
     private Scanner scanner = new Scanner(System.in);
 
-    private String firstName;
-    private String lastName;
-    private String address;
-    private long phoneNumber;
-    private String email;
-    private String password;
-    private double salary;
-    private int officeNumber;
-
     @Override
     public void start() {
         printMenuHeader();

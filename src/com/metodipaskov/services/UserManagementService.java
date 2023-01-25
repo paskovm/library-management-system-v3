@@ -64,9 +64,9 @@ public class UserManagementService {
     }
 
     public void createUser(Person user) {
-        if (userExists(user)) {
-            return;
-        }
+//        if (userExists(user)) {
+//            return;
+//        }
         users.add(user);
     }
 
@@ -109,6 +109,17 @@ public class UserManagementService {
         for (Person person : users) {
             if (person instanceof Clerk && ((Clerk) person).getDeskNumber() == clerk.getDeskNumber()) {
                 System.out.println("Provided desk number: " + clerk.getDeskNumber() + " is already in use. " +
+                        "Please, provide new desk number." + System.lineSeparator());
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean checkClerksDeskOccupied(int deskNum) {
+        for (Person person : users) {
+            if (person instanceof Clerk && ((Clerk) person).getDeskNumber() == deskNum) {
+                System.out.println("Provided desk number: " + deskNum + " is already in use. " +
                         "Please, provide new desk number." + System.lineSeparator());
                 return true;
             }
@@ -173,8 +184,10 @@ public class UserManagementService {
                     }
                 } else if (user instanceof Clerk) {
                     if (deskNumber > 0) {
-                        ((Clerk) user).setDeskNumber(deskNumber);
-                        System.out.println("The users desk number updated successfully.");
+                        if (!checkClerksDeskOccupied(deskNumber)) {
+                            ((Clerk) user).setDeskNumber(deskNumber);
+                            System.out.println("The users desk number updated successfully.");
+                        }
                     }
                 }
             }

@@ -4,6 +4,7 @@ import com.metodipaskov.entities.actors.*;
 import com.metodipaskov.services.UserManagementService;
 import com.metodipaskov.utils.DatabaseInteractions;
 
+import java.util.List;
 import java.util.Scanner;
 
 public abstract class AddUpdateCheckUserMenu extends AddUpdateCheckBookMenu {
@@ -24,15 +25,15 @@ public abstract class AddUpdateCheckUserMenu extends AddUpdateCheckBookMenu {
 
     protected Person getUser() {
         Scanner scanner = new Scanner(System.in);
-        Person user;
+        Person user = null;
 
         MAIN:
         while (true) {
             try {
                 System.out.println("----------------------------------------------------");
                 System.out.println("To enter users id press 1," + System.lineSeparator() +
-                                   "to enter users full name press 2," + System.lineSeparator() +
-                                   "to enter users email press 3");
+                        "to enter users full name press 2," + System.lineSeparator() +
+                        "to enter users email press 3");
                 System.out.println("Enter your choice: ");
                 int choice = Integer.parseInt(scanner.nextLine());
 
@@ -40,30 +41,39 @@ public abstract class AddUpdateCheckUserMenu extends AddUpdateCheckBookMenu {
                     case 1:
                         System.out.println("Enter users id: ");
                         int id = Integer.parseInt(scanner.nextLine());
-                        user = userService.getUserById(id);
-                        if (user == null) {
-                            System.out.println("There is no user with id \"" + id + "\" registered into the system.");
+
+                        id = DatabaseInteractions.getPerson(id, null, null);
+                        if (id > 0) {
+                            user = userService.getUserById(id);
+                            if (user == null) {
+                                System.out.println("There is no user with id \"" + id + "\" registered into the system.");
+                            }
                         }
                         break MAIN;
-
                     case 2:
                         System.out.println("Enter users full name: ");
                         String fullName = scanner.nextLine();
-                        user = userService.getUserByFullName(fullName);
-                        if (user == null) {
-                            System.out.println("There is no user with name \"" + fullName + "\" registered into the system.");
+
+                        id = DatabaseInteractions.getPerson(0, fullName, null);
+                        if (id > 0) {
+                            user = userService.getUserByFullName(fullName);
+                            if (user == null) {
+                                System.out.println("There is no user with name \"" + fullName + "\" registered into the system.");
+                            }
                         }
                         break MAIN;
-
                     case 3:
                         System.out.println("Enter users email: ");
                         String email = scanner.nextLine();
-                        user = userService.getUserByEmail(email);
-                        if (user == null) {
-                            System.out.println("There is no user with email \"" + email + "\" registered into the system.");
+
+                        id = DatabaseInteractions.getPerson(0, null, email);
+                        if (id > 0) {
+                            user = userService.getUserByEmail(email);
+                            if (user == null) {
+                                System.out.println("There is no user with email \"" + email + "\" registered into the system.");
+                            }
                         }
                         break MAIN;
-
                     default:
                         System.out.println("Wrong choice selected! You need to enter number between 1-3.");
                 }
@@ -172,16 +182,16 @@ public abstract class AddUpdateCheckUserMenu extends AddUpdateCheckBookMenu {
                 } else {
                     try {
                         deskNumber = Integer.parseInt(dskNum);
+                        if (userService.checkClerksDeskOccupied(deskNumber)) {
+                            System.out.println("The provided desk number is already in use!");
+                            break;
+                        }
                     } catch (NumberFormatException e) {
                         System.out.println("The provided value for desk must be numeric!");
                         break;
                     }
                 }
             }
-
-            // Check if user already exists !!!!!
-            // Check if Librarian already exists
-            // Check Clerks desk occupation !
 
             int userId = DatabaseInteractions.createPerson(firstName, lastName, address, phoneNumber, email, password,
                     officeNumber, deskNumber, salary);
@@ -232,7 +242,7 @@ public abstract class AddUpdateCheckUserMenu extends AddUpdateCheckBookMenu {
                 break;
             } catch (NumberFormatException e) {
                 System.out.println("Problem detected! Wrong value entered for the phone number: " + input +
-                                   System.lineSeparator() + " Please, try again.");
+                        System.lineSeparator() + " Please, try again.");
             }
         }
 
@@ -254,7 +264,7 @@ public abstract class AddUpdateCheckUserMenu extends AddUpdateCheckBookMenu {
                     break;
                 } catch (NumberFormatException e) {
                     System.out.println("Problem detected! Wrong value entered for the salary: " + input +
-                                       System.lineSeparator() + " Please, try again.");
+                            System.lineSeparator() + " Please, try again.");
                 }
             }
         }
@@ -271,7 +281,7 @@ public abstract class AddUpdateCheckUserMenu extends AddUpdateCheckBookMenu {
                     break;
                 } catch (NumberFormatException e) {
                     System.out.println("Problem detected! Wrong value entered for the office: " + input +
-                                       System.lineSeparator() + " Please, try again.");
+                            System.lineSeparator() + " Please, try again.");
                 }
             }
         }
@@ -288,22 +298,25 @@ public abstract class AddUpdateCheckUserMenu extends AddUpdateCheckBookMenu {
                     break;
                 } catch (NumberFormatException e) {
                     System.out.println("Problem detected! Wrong value entered for the desk: " + input +
-                                       System.lineSeparator() + " Please, try again.");
+                            System.lineSeparator() + " Please, try again.");
                 }
             }
         }
 
         if ((firstName != null && !firstName.isEmpty() && !firstName.isEmpty()) ||
-            (lastName != null && !lastName.isBlank() && !lastName.isEmpty()) ||
-            (address != null && !address.isBlank() && !address.isEmpty()) ||
-            phoneNumber > 0 ||
-            (email != null && !email.isBlank() && !email.isEmpty()) ||
-            (password != null && !password.isBlank() && !password.isEmpty()) ||
-            salary > 0 ||
-            officeNumber > 0 ||
-            deskNumber > 0) {
+                (lastName != null && !lastName.isBlank() && !lastName.isEmpty()) ||
+                (address != null && !address.isBlank() && !address.isEmpty()) ||
+                phoneNumber > 0 ||
+                (email != null && !email.isBlank() && !email.isEmpty()) ||
+                (password != null && !password.isBlank() && !password.isEmpty()) ||
+                salary > 0 ||
+                officeNumber > 0 ||
+                deskNumber > 0) {
 
-            userService.updateUser(user, firstName, lastName, address, phoneNumber, email, password, salary, officeNumber, deskNumber);
+            int result = DatabaseInteractions.updatePerson(user.getId(), firstName, lastName, address, phoneNumber, email, password, officeNumber, deskNumber, salary);
+            if (result > 0) {
+                userService.updateUser(user, firstName, lastName, address, phoneNumber, email, password, salary, officeNumber, deskNumber);
+            }
 
         } else {
             System.out.println("There is nothing to be updated!");

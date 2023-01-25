@@ -4,6 +4,10 @@ import com.metodipaskov.entities.Book;
 import com.metodipaskov.entities.HoldRequest;
 import com.metodipaskov.entities.Loan;
 import com.metodipaskov.entities.actors.*;
+import com.metodipaskov.services.BookManagementService;
+import com.metodipaskov.services.HoldRequestManagementService;
+import com.metodipaskov.services.LoanManagementService;
+import com.metodipaskov.services.UserManagementService;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -22,7 +26,10 @@ public class PopulateLibrary {
     private static TempLibrarian tempLibrarian = null;
     private static List<TempClerk> tempClerks = new ArrayList<>();
     private static List<TempStaff> tempStaffs = new ArrayList<>();
-
+    private static UserManagementService userService = UserManagementService.getInstance();
+    private static BookManagementService bookService = BookManagementService.getInstance();
+    private static LoanManagementService loanService = LoanManagementService.getInstance();
+    private static HoldRequestManagementService holdReqService = HoldRequestManagementService.getInstance();
 
     public static void populate() {
         try (Connection connection = DriverManager.getConnection(HOST, USERNAME, PASSWORD);
@@ -63,6 +70,8 @@ public class PopulateLibrary {
                 }
             }
         }
+
+        holdReqService.setHoldRequests(holdRequests);
     }
 
     private static void collectAllLoans(Statement statement) throws SQLException {
@@ -103,6 +112,8 @@ public class PopulateLibrary {
                 }
             }
         }
+
+        loanService.setLoans(loans);
     }
 
     private static Book getBook(int id) {
@@ -138,6 +149,8 @@ public class PopulateLibrary {
             book.setIssued(isIssued);
             books.add(book);
         }
+
+        bookService.setBooks(books);
     }
 
     private static void collectAllUsers(Statement statement) throws SQLException {
@@ -218,6 +231,8 @@ public class PopulateLibrary {
             }
 
         }
+
+        userService.setUsers(users);
     }
 
     private static boolean isLibrarian(int id) {
