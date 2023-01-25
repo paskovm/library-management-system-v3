@@ -38,14 +38,14 @@ public class PopulateLibrary {
             collectAllUsers(statement);
             collectAllBooks(statement);
             collectAllLoans(statement);
-            collectHoldRequest(statement);
+            collectHoldRequests(statement);
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    private static void collectHoldRequest(Statement statement) throws SQLException {
+    private static void collectHoldRequests(Statement statement) throws SQLException {
         String sql = "SELECT * FROM LMS.HOLDREQUEST";
         ResultSet result = statement.executeQuery(sql);
 
