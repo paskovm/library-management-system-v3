@@ -26,7 +26,7 @@ public class RemoveBookMenu extends AddUpdateCheckBookMenu {
         Book book = getBook();
         if (book != null) {
             int result = DatabaseInteractions.removeBook(book.getBookId());
-            if (result < 0) { // if no book id is returned that means it is successfully deleted
+            if (result > 0) {
                 ListIterator<Loan> loans = loanService.getLoansForBook(book).listIterator();
                 while (loans.hasNext()) {
                     loanService.removeLoan(loans.next());

@@ -7,6 +7,7 @@ import com.metodipaskov.entities.actors.Person;
 import com.metodipaskov.entities.actors.Staff;
 import com.metodipaskov.menu.help.AddUpdateCheckUserMenu;
 import com.metodipaskov.services.LoanManagementService;
+import com.metodipaskov.utils.DatabaseInteractions;
 
 public class ReturnBookMenu extends AddUpdateCheckUserMenu {
 
@@ -22,10 +23,12 @@ public class ReturnBookMenu extends AddUpdateCheckUserMenu {
                 Book book = getBook();
 
                 if (book != null) {
-                    loanService.returnBook((Borrower) user, book, (Staff) library.getLoggedInPerson());
-                    System.out.println("Books loan completed!");
+                    int result = DatabaseInteractions.returnBook((Borrower) user, book, (Staff) library.getLoggedInPerson());
+                    if (result > 0) {
+                        loanService.returnBook((Borrower) user, book, (Staff) library.getLoggedInPerson());
+                        System.out.println("Books loan completed!");
+                    }
                 }
-
             } else {
                 System.out.println("The user you provided is not borrower!");
                 user.printInfo();
@@ -38,7 +41,7 @@ public class ReturnBookMenu extends AddUpdateCheckUserMenu {
     @Override
     public void printMenuHeader() {
         System.out.println(System.lineSeparator() +
-                            "----------------------------------------------------");
+                           "----------------------------------------------------");
         System.out.println("==============  Return a Book Portal  ==============");
         System.out.println("----------------------------------------------------");
     }

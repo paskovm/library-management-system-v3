@@ -1,6 +1,12 @@
 package com.metodipaskov.utils;
 
+import com.metodipaskov.entities.Book;
+import com.metodipaskov.entities.Loan;
+import com.metodipaskov.entities.actors.Borrower;
+import com.metodipaskov.entities.actors.Staff;
+
 import java.sql.*;
+import java.time.LocalDate;
 
 public class DatabaseInteractions {
 
@@ -74,18 +80,19 @@ public class DatabaseInteractions {
     public static int updatePerson(int id, String fName, String lName, String address, long phone, String email, String password,
                                    int office, int desk, double salary) {
 
-        if (fName != null || lName != null || address != null || phone > 0 || email != null || password != null) {
+        int result = FAILURE_CODE;
+        if (fName.length() > 0 || lName.length() > 0 || address.length() > 0 || phone > 0 || email.length() > 0 || password.length() > 0) {
             String sqlPt1 = "UPDATE LMS.PERSON SET ";
             String sqlPt2 = "";
             String sqlPt3 = " WHERE ID = " + id;
 
             String sql = null;
 
-            if (fName != null) {
+            if (fName.length() > 0) {
                 sqlPt2 = "FirstName = \"" + fName + "\"";
             }
 
-            if (lName != null) {
+            if (lName.length() > 0) {
                 if (sqlPt2.isEmpty()) {
                     sqlPt2 = "LastName = \"" + lName + "\"";
                 } else {
@@ -93,7 +100,7 @@ public class DatabaseInteractions {
                 }
             }
 
-            if (address != null) {
+            if (address.length() > 0) {
                 if (sqlPt2.isEmpty()) {
                     sqlPt2 = "Address = \"" + address + "\"";
                 } else {
@@ -109,7 +116,7 @@ public class DatabaseInteractions {
                 }
             }
 
-            if (email != null) {
+            if (email.length() > 0) {
                 if (sqlPt2.isEmpty()) {
                     sqlPt2 = "Email = \"" + email + "\"";
                 } else {
@@ -117,7 +124,7 @@ public class DatabaseInteractions {
                 }
             }
 
-            if (password != null) {
+            if (password.length() > 0) {
                 if (password.isEmpty()) {
                     sqlPt2 = "Password = \"" + password + "\"";
                 } else {
@@ -129,7 +136,7 @@ public class DatabaseInteractions {
                 sql = sqlPt1.concat(sqlPt2).concat(sqlPt3);
             }
 
-            int result = updateDb(sql);
+            result = updateDb(sql);
             if (result != 1) {
                 System.out.println("Problem detected! During Person table update.");
                 return FAILURE_CODE;
@@ -141,7 +148,7 @@ public class DatabaseInteractions {
 
             if (office > 0) {
                 sql = "UPDATE LMS.LIBRARIAN SET OfficeNumber = " + office + " WHERE ID = " + id;
-                int result = updateDb(sql);
+                result = updateDb(sql);
                 if (result != 1) {
                     System.out.println("Problem detected! During Librarian table update.");
                     return FAILURE_CODE;
@@ -150,7 +157,7 @@ public class DatabaseInteractions {
 
             if (desk > 0) {
                 sql = "UPDATE LMS.CLERK SET DeskNumber = " + desk + " WHERE ID = " + id;
-                int result = updateDb(sql);
+                result = updateDb(sql);
                 if (result != 1) {
                     System.out.println("Problem detected! During Clerk table update.");
                     return FAILURE_CODE;
@@ -159,7 +166,7 @@ public class DatabaseInteractions {
 
             if (salary > 0) {
                 sql = "UPDATE LMS.STAFF SET Salary = " + salary + " WHERE ID = " + id;
-                int result = updateDb(sql);
+                result = updateDb(sql);
                 if (result != 1) {
                     System.out.println("Problem detected! During Staff table update.");
                     return FAILURE_CODE;
@@ -168,7 +175,7 @@ public class DatabaseInteractions {
 
         }
 
-        return 1;
+        return result;
     }
 
     public static int getPerson(int userId, String fullName, String email) {
@@ -202,7 +209,6 @@ public class DatabaseInteractions {
         }
     }
 
-
     public static int createBook(String title, String author, String genre) {
         String sql = "INSERT INTO LMS.BOOK VALUES (0, \"" + title + "\", \"" + author + "\", \"" + genre + "\", false)";
 
@@ -221,21 +227,131 @@ public class DatabaseInteractions {
         return result;
     }
 
+    public static int updateBook(Book book, String title, String author, String genre) {
+        int result = FAILURE_CODE;
+
+        if (book != null) {
+            if ((title != null && title.length() > 0) ||
+                (author != null && author.length() > 0) ||
+                (genre != null && genre.length() > 0)) {
+
+                String sql = "";
+                String sqlPt1 = "UPDATE LMS.BOOK SET ";
+                String sqlPt2 = "";
+                String sqlPt3 = " WHERE ID = " + book.getBookId();
+
+                if (title.length() > 0) {
+                    sqlPt2 += "Title = \"" + title +"\"";
+                }
+
+                if (author.length() > 0) {
+                    if (sqlPt2.isEmpty()) {
+                        sqlPt2 += "Author = \"" + author + "\"";
+                    } else {
+                        sqlPt2 += ", Author = \"" + author + "\"";
+                    }
+                }
+
+                if (genre.length() > 0) {
+                    if (sqlPt2.isEmpty()) {
+                        sqlPt2 += "Genre = \"" + genre + "\"";
+                    } else {
+                        sqlPt2 += ", Genre = \"" + genre + "\"";
+                    }
+                }
+
+                if (!sqlPt2.isEmpty()) {
+                    sql = sqlPt1.concat(sqlPt2).concat(sqlPt3);
+
+                    result = updateDb(sql);
+                }
+
+
+
+            } else {
+                System.out.println("There is nothing to be updated. Provided info:");
+            }
+
+        } else {
+            System.out.println("Problem detected! Database issue. Can't find the provided book.");
+        }
+
+        return result;
+    }
+
     public static int removeBook(int id) {
         String sql = "DELETE FROM LMS.BOOK WHERE ID = " + id;
 
         int result = updateDb(sql);
-        if (result == FAILURE_CODE) {
-            System.out.println("Problem detected! The book can't be deleted.");
-        } else if (result == 0) {
-            System.out.println("No book with id: " + id + ", found to delete.");
-        } else {
-            sql = "SELECT * FROM LMS.BOOK WHERE ID = " + id;
+        if (result != 1) {
+            System.out.println("Problem detected! Database issue. The book can't be deleted book table.");
+            result = FAILURE_CODE;
 
-            result = queryDbForId(sql);
-            if (result != FAILURE_CODE) {
-                System.out.println("Problem detected! The book is not deleted.");
+        } else {
+            sql = "DELETE FROM LMS.HOLDREQUEST WHERE Book = " + id;
+            result = updateDb(sql);
+            if (result < 0) {
+                System.out.println("Problem detected! Database issue. The book can't be deleted from hold request table.");
+                result = FAILURE_CODE;
+
+            } else {
+                sql = "DELETE FROM LMS.LOAN WHERE Book = " + id;
+                result = updateDb(sql);
+                if (result < 0) {
+                    System.out.println("Problem detected! Database issue. The book can't be deleted from loan table.");
+                    result = FAILURE_CODE;
+                }
             }
+        }
+        return result;
+    }
+
+    public static int loanBook(Loan loan) {
+        String sql = "UPDATE LMS.BOOK SET IsIssued = true WHERE ID = " + loan.getBook().getBookId();
+        int result = updateDb(sql);
+        if (result != 1) {
+            System.out.println("Problem detected! The Book is not registered as borrowed in the database.");
+            return FAILURE_CODE;
+        }
+
+        sql = "INSERT INTO LMS.LOAN (Borrower, Book, Issuer, IssueDate, FinePaid) VALUES (" + loan.getBorrower().getId() + ", " + loan.getBook().getBookId() + ", " + loan.getIssuer().getId() + ", \"" + loan.getIssueDate() + "\", "+ false + ")";
+        result = updateDb(sql);
+        if (result != 1) {
+            System.out.println("Problem detected! Database issue. The user can't borrow the book.");
+            return FAILURE_CODE;
+        }
+
+        return result;
+    }
+
+    public static int returnBook(Borrower borrower, Book book, Staff staff) {
+        String sql = "UPDATE LMS.BOOK SET IsIssued = false WHERE ID = " + book.getBookId();
+        int result = updateDb(sql);
+
+        if (result != 1) {
+            System.out.println("Problem detected! Database issue. The book not flagged as returned.");
+            return FAILURE_CODE;
+        }
+
+        sql = "UPDATE LMS.LOAN SET Receiver = " + staff.getId() + ", ReturnDate = \"" + LocalDate.now() + "\", FinePaid = true WHERE Borrower = " + borrower.getId() + " AND Book = " + book.getBookId();
+        result = updateDb(sql);
+
+        if (result != 1) {
+            System.out.println("Problem detected! Database issue. Loan not completed.");
+            return FAILURE_CODE;
+        }
+
+        return result;
+
+    }
+
+    public static int createHoldRequest(Borrower borrower, Book book) {
+        String sql = "INSERT INTO LMS.HOLDREQUEST VALUES (" + borrower.getId() + ", " + book.getBookId() + ", \"" + LocalDate.now() + "\")";
+        int result = updateDb(sql);
+
+        if (result != 1) {
+            System.out.println("Problem detected! Database issue. Not able to update the hold request info.");
+            return FAILURE_CODE;
         }
         return result;
     }

@@ -74,8 +74,10 @@ public class Borrower extends Person {
 
     @Override
     public void printInfo() {
+        boolean currentLoansAvailable = loans.stream().anyMatch(loan -> !loan.isFinePaid());
+
         super.printInfo();
-        System.out.println("Loans available: " + (loans.size() > 0 ? "yes" : "no"));
+        System.out.println("Loans available: " + (currentLoansAvailable ? "yes" : "no"));
         System.out.println("Hold requests available: " + (holdRequests.size() > 0 ? "yes" : "no"));
     }
 }

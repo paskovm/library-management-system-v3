@@ -7,6 +7,7 @@ import com.metodipaskov.entities.actors.Borrower;
 import com.metodipaskov.entities.actors.Person;
 import com.metodipaskov.menu.help.AddUpdateCheckUserMenu;
 import com.metodipaskov.services.HoldRequestManagementService;
+import com.metodipaskov.utils.DatabaseInteractions;
 
 public class PlaceBookOnHoldMenu extends AddUpdateCheckUserMenu {
 
@@ -29,8 +30,11 @@ public class PlaceBookOnHoldMenu extends AddUpdateCheckUserMenu {
             if (user instanceof Borrower) {
                 Book book = getBook();
                 if (book != null) {
-                    HoldRequest holdRequest = new HoldRequest((Borrower) user, book);
-                    holdRequestService.createHoldRequest(holdRequest);
+                    int result = DatabaseInteractions.createHoldRequest((Borrower) user, book);
+                    if (result > 0) {
+                        HoldRequest holdRequest = new HoldRequest((Borrower) user, book);
+                        holdRequestService.createHoldRequest(holdRequest);
+                    }
                 }
             } else {
                 System.out.println("The user who requested the hold request is not registered as borrower in the system!");
@@ -43,7 +47,7 @@ public class PlaceBookOnHoldMenu extends AddUpdateCheckUserMenu {
     @Override
     public void printMenuHeader() {
         System.out.println(System.lineSeparator() +
-                            "----------------------------------------------------");
+                           "----------------------------------------------------");
         System.out.println("===========  Book On Hold Request Portal  ==========");
         System.out.println("----------------------------------------------------");
     }

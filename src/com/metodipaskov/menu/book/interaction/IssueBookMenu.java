@@ -8,6 +8,7 @@ import com.metodipaskov.entities.actors.Person;
 import com.metodipaskov.entities.actors.Staff;
 import com.metodipaskov.menu.help.AddUpdateCheckUserMenu;
 import com.metodipaskov.services.LoanManagementService;
+import com.metodipaskov.utils.DatabaseInteractions;
 
 public class IssueBookMenu extends AddUpdateCheckUserMenu {
 
@@ -27,11 +28,14 @@ public class IssueBookMenu extends AddUpdateCheckUserMenu {
                 if (book != null) {
                     Staff staff = (Staff) library.getLoggedInPerson();
                     Loan loan = new Loan((Borrower) user, book, staff);
-                    loanService.issueBook(loan);
-                    System.out.println("Book successfully loaned.");
-                    loan.printInfo();
-                }
 
+                    int result = DatabaseInteractions.loanBook(loan);
+                    if (result > 0) {
+                        loanService.issueBook(loan);
+                        System.out.println("Book successfully loaned.");
+                        loan.printInfo();
+                    }
+                }
             } else {
                 System.out.println("The user you provided is not borrower!");
                 user.printInfo();

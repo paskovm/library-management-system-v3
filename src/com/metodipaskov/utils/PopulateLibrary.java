@@ -67,6 +67,7 @@ public class PopulateLibrary {
                     holdRequest.setRequestDate(requestDate);
 
                     holdRequests.add(holdRequest);
+                    borrower.addHoldRequest(holdRequest);
                 }
             }
         }
@@ -109,6 +110,7 @@ public class PopulateLibrary {
                     loan.setFinePaid(finePaid);
 
                     loans.add(loan);
+                    borrower.addLoan(loan);
                 }
             }
         }

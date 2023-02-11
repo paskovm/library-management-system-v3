@@ -21,7 +21,7 @@ public abstract class AddUpdateCheckBookMenu implements Menu {
             try {
                 System.out.println("----------------------------------------------------");
                 System.out.println("To search a book by id press 1, " + System.lineSeparator() +
-                        "to search a book by title press 2." + System.lineSeparator());
+                                   "to search a book by title press 2." + System.lineSeparator());
                 System.out.println("Enter your choice: ");
 
                 int choice = Integer.parseInt(scanner.nextLine());
@@ -117,10 +117,14 @@ public abstract class AddUpdateCheckBookMenu implements Menu {
         String genre = scanner.nextLine();
 
         if ((title != null && !title.isEmpty() && !title.isBlank()) ||
-                (author != null && !author.isEmpty() && !author.isBlank()) ||
-                (genre != null && !genre.isEmpty() && !genre.isBlank())) {
+            (author != null && !author.isEmpty() && !author.isBlank()) ||
+            (genre != null && !genre.isEmpty() && !genre.isBlank())) {
 
-            bookService.updateBook(book, title, author, genre);     // change required
+            int result = DatabaseInteractions.updateBook(book, title, author, genre);
+            if (result > 0) {
+                bookService.updateBook(book, title, author, genre);
+            }
+
         } else {
             System.out.println("There is nothing to be updated!");
         }

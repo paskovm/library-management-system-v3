@@ -119,6 +119,8 @@ public class LoanManagementService {
             }
             System.out.println(System.lineSeparator() + "-----------------------");
             System.out.println("Fine(s) sum is = $" + finesSum);
+        } else {
+            System.out.println("The user doesn't have fines to pay.");
         }
     }
 
